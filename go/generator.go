@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
 )
@@ -45,11 +46,40 @@ func generateNamesFromDict(dict map[string]interface{}, count int) []string {
 	return result
 }
 
+func writeJSONToFile(arr []string, filename string) string {
+	jsonOutput, err := json.Marshal(arr)
+	checkErr(err)
+
+	err = ioutil.WriteFile(filename, jsonOutput, 0644)
+	checkErr(err)
+
+	return filename
+}
+
+func simpleOutput (arr []string) {
+	for i, v := range arr {
+		fmt.Println(i, v)
+	}
+}
+
 func main() {
 	dict := getDictFromJSON("../data/dict.json")
 
 	names := generateNamesFromDict(dict, 10)
-	for i, name := range names {
-		fmt.Println(i, name)
+
+	args := os.Args
+	output := "output"
+	if len(args) > 1 {
+		output = args[1]
 	}
+	switch output {
+	case "json":
+		filename := writeJSONToFile(names, "names.json")
+		fmt.Println(filename)
+	case "output":
+		simpleOutput(names)
+	default:
+		simpleOutput(names)
+	}
+	
 }
