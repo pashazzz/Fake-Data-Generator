@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
-	"os"
 	"strings"
 	"time"
 )
@@ -63,20 +63,19 @@ func simpleOutput (arr []string) {
 }
 
 func main() {
+	outputPtr := flag.String("output", "print", "'print' -> simple output, 'json' -> to file")
+	countPtr := flag.Int("count", 10, "count names")
+	flag.Parse()
+
 	dict := getDictFromJSON("../data/dict.json")
 
-	names := generateNamesFromDict(dict, 10)
-
-	args := os.Args
-	output := "output"
-	if len(args) > 1 {
-		output = args[1]
-	}
-	switch output {
+	names := generateNamesFromDict(dict, *countPtr)
+	
+	switch *outputPtr {
 	case "json":
 		filename := writeJSONToFile(names, "names.json")
 		fmt.Println(filename)
-	case "output":
+	case "print":
 		simpleOutput(names)
 	default:
 		simpleOutput(names)
